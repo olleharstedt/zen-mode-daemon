@@ -8,9 +8,15 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 // Simple class to watch directory events.
-class DirectoryWatcher implements Runnable {
+class DirectoryWatcher {
 
     private Path path;
+
+    public static void main(String[] args) {
+        Path pathToWatch = FileSystems.getDefault().getPath("/tmp/java7");
+        DirectoryWatcher dirWatcher = new DirectoryWatcher(pathToWatch);
+        dirWatcher.run();
+    }
 
     public DirectoryWatcher(Path path) {
         this.path = path;
@@ -31,7 +37,6 @@ class DirectoryWatcher implements Runnable {
         }
     }
 
-    @Override
     public void run() {
         try {
             WatchService watchService = path.getFileSystem().newWatchService();
