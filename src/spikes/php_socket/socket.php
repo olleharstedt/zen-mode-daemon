@@ -6,8 +6,6 @@ ob_implicit_flush();
 
 $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
-//unlink('/tmp/test.html');
-
 if (socket_bind($sock, '127.0.0.10', 888) === false) {
     die('cannot bind' . PHP_EOL);
 }
@@ -21,31 +19,20 @@ do {
         echo "socket_accept() failed: reason: " . socket_strerror(socket_last_error($sock)) . "\n";
     }
 
-    $msg = "HTTP/1.1 200\r\nContent-Type: text/html\r\n\r\n"
-        . "<!DOCTYPE html><html><head></head><body><h1>asd</h1></body></html>\r\n\r\n";
+    $content = "<!DOCTYPE html><html><head></head><body><h1>asd</h1></body></html>";
+    $length = strlen($content);
+    $header = "HTTP/1.1 200\r\nContent-Type: text/html\r\nContent-Length:$length\r\n\r\n";
+    $msg = $header . $content;
+
+    // Request does NOT work when read is uncommented.
+    while (true) {
+        $buf = socket_read($msgsock, 4012, PHP_NORMAL_READ);
+        if (empty(trim($buf))) {
+            break;
+        }
+        echo $buf . PHP_EOL;
+    }
     socket_write($msgsock, $msg, strlen($msg));
     socket_close($msgsock);
     continue;
-
-    do {
-        if (false === ($buf = socket_read($msgsock, 2048, PHP_NORMAL_READ))) {
-            echo "socket_read() failed: reason: " . socket_strerror(socket_last_error($msgsock)) . "\n";
-            break 2;
-        }
-        if (!$buf = trim($buf)) {
-            continue;
-        }
-        if ($buf == 'quit') {
-            break;
-        }
-        if ($buf == 'shutdown') {
-            socket_close($msgsock);
-            break 2;
-        }
-        echo $buf . PHP_EOL;
-        $talkback = "<!DOCTYPE html><html></html>";
-        socket_write($msgsock, $talkback, strlen($talkback));
-        echo "$buf\n";
-    } while (true);
-    socket_close($msgsock);
 } while (true);
