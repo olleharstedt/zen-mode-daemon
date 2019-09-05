@@ -25,7 +25,6 @@ do {
 
     $flattenGet = [];
 
-    // Request does NOT work when read is uncommented.
     $buf = '';
     while (true) {
         $tmp = socket_read($msgsock, 4012, PHP_NORMAL_READ);
