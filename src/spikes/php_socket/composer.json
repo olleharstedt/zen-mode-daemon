@@ -1,5 +1,7 @@
 {
     "require": {
-        "paquettg/php-html-parser": "^2.1"
+        "paquettg/php-html-parser": "^2.1",
+        "j0k3r/graby": "^2.0",
+        "php-http/guzzle6-adapter": "^2.0"
     }
 }
