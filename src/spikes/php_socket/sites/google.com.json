@@ -1,5 +1,7 @@
 {
     "type": "search_engine",
     "name": "Google",
-    "form_name": "f"
+    "form_name": "f",
+    "query": "/search?q=",
+    "getQuery": "q"
 }

@@ -7,6 +7,7 @@ require __DIR__ . '/helpers/request.php';
 require __DIR__ . '/helpers/config.php';
 require __DIR__ . '/classes/sites/SiteBase.php';
 require __DIR__ . '/classes/sites/SearchEngineSite.php';
+require __DIR__ . '/classes/sites/SearchEngineResultSite.php';
 
 define('ROOT_DIR', __DIR__);
 
@@ -29,7 +30,7 @@ do {
         echo "socket_accept() failed: reason: " . socket_strerror(socket_last_error($sock)) . "\n";
     }
 
-    $flattenGet = [];
+    $get = [];
 
     $buf = '';
     while (true) {
@@ -50,7 +51,7 @@ do {
         continue;
     } else {
         try {
-            $flattenGet = helpers\request\getParams($buf);
+            $get = helpers\request\getParams($buf);
         } catch (\Exception $ex) {
             echo $ex->getMessage() . PHP_EOL;
             socket_close($msgsock);
@@ -59,15 +60,15 @@ do {
     }
     echo $buf . PHP_EOL;
 
-    if (isset($flattenGet['__site'])) {
+    if (isset($get['__site'])) {
         /** @var string */
-        $configFilename = helpers\config\getConfigFilename($flattenGet['__site']);
+        $configFilename = helpers\config\getConfigFilename($get['__site']);
         /** @var object */
         $configJson = helpers\config\getConfigJson($configFilename);
         /** @var string */
-        $url = 'https://' . $flattenGet['__site'];
+        $url = 'https://' . $get['__site'];
         /** @var SiteBase */
-        $site = classes\sites\SiteBase::resolveSiteType($configJson);
+        $site = classes\sites\SiteBase::resolveSiteType($configJson, $get);
 
         $site->setUrl($url);
 

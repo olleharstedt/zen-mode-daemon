@@ -13,6 +13,19 @@ class SearchEngineSite extends SiteBase
      */
     public function getContent(): string
     {
+        $dom = new Dom();
+        $dom->loadFromUrl($this->url);
+        $form = $this->replaceFormAction($dom);
+        return $this->getHtml((string) $form);
+    }
+
+    /**
+     * @param string $form Form HTML
+     * @return string
+     * @throws Exception
+     */
+    protected function replaceFormAction(Dom $dom): string
+    {
         if (isset($this->config->form_name)) {
             $formName = $this->config->form_name;
             $dom = new Dom();
@@ -24,22 +37,6 @@ class SearchEngineSite extends SiteBase
             $dom->loadFromUrl($this->url);
             $form = $dom->find("#$formId");
         }
-        $content = "<!DOCTYPE html><html><head></head><body>";
-        $content .= "<h1>{$this->config->name}</h1>";
-        $form = $this->replaceFormAction($dom);
-        $content .= (string) $form;
-        $content .= "</body></html>";
-        return $content;
-    }
-
-    /**
-     * @param string $form Form HTML
-     * @return string
-     * @throws Exception
-     */
-    protected function replaceFormAction(Dom $dom): string
-    {
-        $form = $dom->find('form');
         $form->setAttribute('action', '/');
         $form->setAttribute('method', 'GET');
         $input = new HtmlNode('input');
