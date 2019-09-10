@@ -3,6 +3,8 @@
 namespace zenmodedaemon\classes\sites;
 
 use PHPHtmlParser\Dom;
+use PHPHtmlParser\Dom\AbstractNode;
+use PHPHtmlParser\Dom\TextNode;
 use Phpml\Classification\KNearestNeighbors;
 use Phpml\Clustering\KMeans;
 
@@ -30,10 +32,7 @@ class SearchEngineResultSite extends SiteBase
         $lens = [];
         foreach ($links as $link) {
             $data = [
-                strlen($link),
-                strlen($link->text()),
-                count($link->getChildren()),
-                count($link->getAttributes())
+                $this->countAllChildren($link)
             ];
             $lens[(string) $link] = $data;
             //echo json_encode($data). $link->text().PHP_EOL;
@@ -42,7 +41,7 @@ class SearchEngineResultSite extends SiteBase
             //}
             $content .= '<p>' . $link . '</p>';
         }
-        $kmeans = new KMeans(4);
+        $kmeans = new KMeans(6);
         $res = $kmeans->cluster($lens);
         usort(
             $res,
@@ -51,6 +50,22 @@ class SearchEngineResultSite extends SiteBase
             }
         );
 
-        return $this->getHtml(implode('<hr>', array_keys($res[2])));
+        return $this->getHtml(implode('<hr>', array_keys($res[3])));
+    }
+
+    /**
+     * @return int
+     */
+    protected function countAllChildren(AbstractNode $node): int
+    {
+        $res = 0;
+        foreach ($node->getChildren() as $child) {
+            if ($child instanceof TextNode) {
+                $res += 1;
+            } else {
+                $res += 1 + $this->countAllChildren($child);
+            }
+        }
+        return $res;
     }
 }
