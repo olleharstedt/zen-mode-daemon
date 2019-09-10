@@ -22,7 +22,8 @@ class SearchEngineResultSite extends SiteBase
 
         $dom = new Dom();
         $dom->loadFromUrl($url);
-        $links = $dom->find('#' . $this->config->result_id . ' a');
+        $links = $dom->find('a');
+        var_dump(count($links));
 
         $svgs = $dom->find('svg');
         foreach ($svgs as $svg) {
@@ -32,9 +33,11 @@ class SearchEngineResultSite extends SiteBase
         $content = '';
         $lens = [];
         foreach ($links as $link) {
+            $href = $link->getAttribute('href');
             $data = [
                 strlen($link->text()),
-                $this->countAllChildren($link)
+                $this->countAllChildren($link),
+                substr($href, 0, 1) === '/' ? 0 : 2
             ];
             $lens[(string) $link] = $data;
             //echo json_encode($data). $link->text().PHP_EOL;
@@ -47,7 +50,7 @@ class SearchEngineResultSite extends SiteBase
         $kmeans = new KMeans(6);
         $res = $kmeans->cluster($lens);
          */
-        $dbscan = new DBSCAN($epsilon = 2, $minSamples = 3);
+        $dbscan = new DBSCAN($epsilon = 3, $minSamples = 3);
         $res = $dbscan->cluster($lens);
         usort(
             $res,
@@ -57,7 +60,13 @@ class SearchEngineResultSite extends SiteBase
         );
         var_dump(count($res));
 
-        return $this->getHtml(implode('<hr>', array_keys($res[4])));
+        $html = '';
+        foreach ($res as $i => $re) {
+            $html .= "<h2>$i</h2>";
+            $html .= implode('<hr>', array_keys($res[$i]));
+        }
+
+        return $this->getHtml($html);
     }
 
     /**

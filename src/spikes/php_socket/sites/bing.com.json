@@ -4,5 +4,5 @@
     "form_id": "sb_form",
     "query": "/search?q=",
     "getQuery": "q",
-    "result_id": "b_results"
+    "result_id": "b_content"
 }
