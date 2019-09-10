@@ -3,5 +3,6 @@
     "name": "Google",
     "form_name": "f",
     "query": "/search?q=",
-    "getQuery": "q"
+    "getQuery": "q",
+    "result_id": "main"
 }

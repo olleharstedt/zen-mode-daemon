@@ -17,7 +17,7 @@ class SearchEngineResultSite extends SiteBase
 
         $dom = new Dom();
         $dom->loadFromUrl($url);
-        $links = $dom->find('#main a');
+        $links = $dom->find('#' . $this->config->result_id . ' a');
 
         $content = '';
         foreach ($links as $link) {

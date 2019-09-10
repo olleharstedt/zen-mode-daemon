@@ -1,5 +1,8 @@
 {
     "type": "search_engine",
     "name": "Bing",
-    "form_id": "sb_form"
+    "form_id": "sb_form",
+    "query": "/search?q=",
+    "getQuery": "q",
+    "result_id": "b_results"
 }
