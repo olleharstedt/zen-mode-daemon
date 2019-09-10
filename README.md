@@ -19,6 +19,20 @@ Package:
 
   $ java -cp target/my-app-1.0-SNAPSHOT.jar com.mycompany.app.App
 
+## Web page types
+
+An algorithm should be able to see the difference between:
+
+* Search engine web page
+* Search engine result page/link list
+* Article
+* Video
+* Forum thread/comment thread
+
+Naturla language processing, NLP?
+
+Training set?
+
 ## Notes
 
 Boilerplate Detection using Shallow Text Features
@@ -32,6 +46,8 @@ https://cleaneval.sigwac.org.uk/lrec08-cleaneval.pdf
 Firefox reader view code: https://github.com/mozilla/readability
 
 Java port: https://github.com/chimbori/crux
+
+Java NLP: https://opennlp.apache.org/
 
 PHP lib Graby: https://github.com/j0k3r/graby
 
