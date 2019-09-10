@@ -9,7 +9,7 @@ namespace zenmodedaemon\helpers\request;
  * @return array<string, string>
  * @throws \Exception
  */
-function getParams(string $buffert)
+function getParams(string $buffert): array
 {
     $flattenGet = [];
 
@@ -27,4 +27,14 @@ function getParams(string $buffert)
     }
 
     return $flattenGet;
+}
+
+/**
+ * @param string $content
+ * @return string
+ */
+function bakeHeader(string $content): string
+{
+    $length = strlen($content);
+    return "HTTP/1.1 200\r\nContent-Type: text/html\r\nContent-Length:$length\r\n\r\n";
 }

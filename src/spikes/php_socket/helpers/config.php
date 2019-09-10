@@ -6,7 +6,7 @@ namespace zenmodedaemon\helpers\config;
  * @param string $__site
  * @return string
  */
-function getConfigFilename(string $__site)
+function getConfigFilename(string $__site): string
 {
     return ROOT_DIR . '/sites/' . $__site . '.json';
 }
@@ -16,7 +16,7 @@ function getConfigFilename(string $__site)
  * @return object
  * @throws \Exception
  */
-function getConfigJson(string $configFile)
+function getConfigJson(string $configFile): object
 {
     if (file_exists($configFile)) {
         return json_decode(file_get_contents($configFile));

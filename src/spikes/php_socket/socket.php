@@ -2,11 +2,11 @@
 
 namespace zenmodedaemon;
 
+require "vendor/autoload.php";
 require __DIR__ . '/helpers/request.php';
 require __DIR__ . '/helpers/config.php';
-require "vendor/autoload.php";
-
-use PHPHtmlParser\Dom;
+require __DIR__ . '/classes/sites/SiteBase.php';
+require __DIR__ . '/classes/sites/SearchEngineSite.php';
 
 define('ROOT_DIR', __DIR__);
 
@@ -63,32 +63,19 @@ do {
         /** @var string */
         $configFilename = helpers\config\getConfigFilename($flattenGet['__site']);
         /** @var object */
-        $json = helpers\config\getConfigJson($configFilename);
+        $configJson = helpers\config\getConfigJson($configFilename);
         /** @var string */
         $url = 'https://' . $flattenGet['__site'];
+        /** @var SiteBase */
+        $site = classes\sites\SiteBase::resolveSiteType($configJson);
+
+        $site->setUrl($url);
+
         /** @var string */
-        $site = file_get_contents($url);
-        if ($json->type === 'search_engine') {
-            if (isset($json->form_name)) {
-                $formName = $json->form_name;
-                $dom = new Dom();
-                $dom->loadFromUrl($url);
-                $form = $dom->find("form[name=$formName]");
-            } elseif (isset($json->form_id)) {
-                $formId = $json->form_id;
-                $dom = new Dom();
-                $dom->loadFromUrl($url);
-                $form = $dom->find("#$formId");
-            }
-            $content = "<!DOCTYPE html><html><head></head><body>";
-            $content .= "<h1>{$json->name}</h1>";
-            $content .= (string) $form;
-            $content .= "</body></html>";
-        } else {
-            $content = $site;
-        }
-        $length = strlen($content);
-        $header = "HTTP/1.1 200\r\nContent-Type: text/html\r\nContent-Length:$length\r\n\r\n";
+        $content = $site->getContent();
+        /** @var string */
+        $header = helpers\request\bakeHeader($content);
+        /** @var string */
         $msg = $header . $content;
     } else {
         $content = "<!DOCTYPE html><html><head></head><body><h1>No __site defined in URL</h1></body></html>";
