@@ -1,8 +1,12 @@
 <?php
 
+namespace zenmodedaemon;
+
+require __DIR__ . '/helpers/request.php';
 require "vendor/autoload.php";
 
 use PHPHtmlParser\Dom;
+use function zenmodedaemon\helpers\request\getParams;
 
 error_reporting(E_ALL);
 set_time_limit(0);
@@ -43,18 +47,12 @@ do {
         socket_close($msgsock);
         continue;
     } else {
-        $parts = explode(' ', $buf);
-        if (count($parts) === 3 && substr($parts[1], 0, 2) === '/?') {
-            $stripped = substr($parts[1], 2);
-            $get = explode('=', $stripped);
-            if (count($get) % 2 !== 0) {
-                echo 'get has not even number of args' . PHP_EOL;
-                socket_close($msgsock);
-                continue;
-            }
-            for ($i = 0; $i < count($get); $i += 2) {
-                $flattenGet[$get[$i]] = $get[$i + 1];
-            }
+        try {
+            $flattenGet = getParams($buf);
+        } catch (\Exception $ex) {
+            echo $ex->getMessage() . PHP_EOL;
+            socket_close($msgsock);
+            continue;
         }
     }
     echo $buf . PHP_EOL;
