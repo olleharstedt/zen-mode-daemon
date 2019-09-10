@@ -7,6 +7,7 @@ use PHPHtmlParser\Dom\AbstractNode;
 use PHPHtmlParser\Dom\TextNode;
 use Phpml\Classification\KNearestNeighbors;
 use Phpml\Clustering\KMeans;
+use Phpml\Clustering\DBSCAN;
 
 class SearchEngineResultSite extends SiteBase
 {
@@ -32,6 +33,7 @@ class SearchEngineResultSite extends SiteBase
         $lens = [];
         foreach ($links as $link) {
             $data = [
+                strlen($link->text()),
                 $this->countAllChildren($link)
             ];
             $lens[(string) $link] = $data;
@@ -41,16 +43,21 @@ class SearchEngineResultSite extends SiteBase
             //}
             $content .= '<p>' . $link . '</p>';
         }
+        /*
         $kmeans = new KMeans(6);
         $res = $kmeans->cluster($lens);
+         */
+        $dbscan = new DBSCAN($epsilon = 2, $minSamples = 3);
+        $res = $dbscan->cluster($lens);
         usort(
             $res,
             function ($a, $b) {
                 return count($a) - count($b);
             }
         );
+        var_dump(count($res));
 
-        return $this->getHtml(implode('<hr>', array_keys($res[3])));
+        return $this->getHtml(implode('<hr>', array_keys($res[4])));
     }
 
     /**
