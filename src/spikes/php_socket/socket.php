@@ -3,10 +3,12 @@
 namespace zenmodedaemon;
 
 require __DIR__ . '/helpers/request.php';
+require __DIR__ . '/helpers/config.php';
 require "vendor/autoload.php";
 
 use PHPHtmlParser\Dom;
-use function zenmodedaemon\helpers\request\getParams;
+
+define('ROOT_DIR', __DIR__);
 
 error_reporting(E_ALL);
 set_time_limit(0);
@@ -48,7 +50,7 @@ do {
         continue;
     } else {
         try {
-            $flattenGet = getParams($buf);
+            $flattenGet = helpers\request\getParams($buf);
         } catch (\Exception $ex) {
             echo $ex->getMessage() . PHP_EOL;
             socket_close($msgsock);
@@ -58,16 +60,15 @@ do {
     echo $buf . PHP_EOL;
 
     if (isset($flattenGet['__site'])) {
-        $configFile = __DIR__ . '/sites/' . $flattenGet['__site'] . '.json';
-        if (file_exists($configFile)) {
-            $json = json_decode(file_get_contents($configFile));
-            $type = $json->type;
-        } else {
-            $type = 'standard';
-        }
+        /** @var string */
+        $configFilename = helpers\config\getConfigFilename($flattenGet['__site']);
+        /** @var object */
+        $json = helpers\config\getConfigJson($configFilename);
+        /** @var string */
         $url = 'https://' . $flattenGet['__site'];
+        /** @var string */
         $site = file_get_contents($url);
-        if ($type === 'search_engine') {
+        if ($json->type === 'search_engine') {
             if (isset($json->form_name)) {
                 $formName = $json->form_name;
                 $dom = new Dom();
