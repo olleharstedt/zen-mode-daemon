@@ -21,14 +21,19 @@ if (socket_bind($sock, '127.0.0.1', 777) === false) {
     die('cannot bind' . PHP_EOL);
 }
 
+echo 'Bound socket' . PHP_EOL;
+
 if (socket_listen($sock, 5) === false) {
     die('cannot listen' . PHP_EOL);
 }
+
+echo 'Listen to socket' . PHP_EOL;
 
 do {
     if (($msgsock = socket_accept($sock)) === false) {
         echo "socket_accept() failed: reason: " . socket_strerror(socket_last_error($sock)) . "\n";
     }
+    echo 'Accepted socket' . PHP_EOL;
 
     $get = [];
 
@@ -43,11 +48,13 @@ do {
     }
     if (empty(trim($buf))) {
         socket_close($msgsock);
+	echo 'Closing socket' . PHP_EOL;
         continue;
     }
     if ($buf === 'GET /favicon.ico HTTP/1.1') {
         // ignore this request
         socket_close($msgsock);
+	echo 'Closing socket' . PHP_EOL;
         continue;
     } else {
         try {
@@ -55,6 +62,7 @@ do {
         } catch (\Exception $ex) {
             echo $ex->getMessage() . PHP_EOL;
             socket_close($msgsock);
+	    echo 'Closing socket' . PHP_EOL;
             continue;
         }
     }
