@@ -33,6 +33,10 @@ Naturla language processing, NLP?
 
 Training set?
 
+## Filter search result links
+
+Split by avarage text length?
+
 ## Notes
 
 Boilerplate Detection using Shallow Text Features
