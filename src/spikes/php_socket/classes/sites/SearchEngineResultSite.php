@@ -37,7 +37,7 @@ class SearchEngineResultSite extends SiteBase
             $data = [
                 strlen($link->text()),
                 $this->countAllChildren($link),
-                substr($href, 0, 1) === '/' ? 0 : 2
+                substr($href, 0, 1) === '/' ? 0 : 1
             ];
             $lens[(string) $link] = $data;
             //echo json_encode($data). $link->text().PHP_EOL;
@@ -50,7 +50,7 @@ class SearchEngineResultSite extends SiteBase
         $kmeans = new KMeans(6);
         $res = $kmeans->cluster($lens);
          */
-        $dbscan = new DBSCAN($epsilon = 3, $minSamples = 3);
+        $dbscan = new DBSCAN($epsilon = 5, $minSamples = 3);
         $res = $dbscan->cluster($lens);
         usort(
             $res,
