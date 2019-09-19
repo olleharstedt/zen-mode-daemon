@@ -1,6 +1,8 @@
 {
     "require": {
         "davefx/phplot": "^6.2",
-        "vimeo/psalm": "^3.5"
+        "vimeo/psalm": "^3.5",
+        "paquettg/php-html-parser": "^2.1",
+        "php-ai/php-ml": "^0.8.0"
     }
 }
