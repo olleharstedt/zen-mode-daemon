@@ -1,5 +1,6 @@
 {
     "require": {
-        "davefx/phplot": "^6.2"
+        "davefx/phplot": "^6.2",
+        "vimeo/psalm": "^3.5"
     }
 }
