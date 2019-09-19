@@ -1,0 +1,5 @@
+{
+    "require": {
+        "davefx/phplot": "^6.2"
+    }
+}
