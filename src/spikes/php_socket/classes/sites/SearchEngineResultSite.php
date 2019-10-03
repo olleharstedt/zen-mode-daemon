@@ -23,13 +23,16 @@ class SearchEngineResultSite extends SiteBase
         $dom = new Dom();
         $dom->loadFromUrl($url);
         $links = $dom->find('a');
-        var_dump(count($links));
 
-        $svgs = $dom->find('svg');
-        foreach ($svgs as $svg) {
-            $svg->setAttribute('viewBox', '');
-        }
+        return $this->getHtml($this->getContentByDBSCAN($links));
+    }
 
+    /**
+     * @param $links
+     * @return string
+     */
+    protected function getContentByDBSCAN($links): string
+    {
         $content = '';
         $lens = [];
         foreach ($links as $link) {
@@ -58,7 +61,6 @@ class SearchEngineResultSite extends SiteBase
                 return count($a) - count($b);
             }
         );
-        var_dump(count($res));
 
         $html = '';
         foreach ($res as $i => $re) {
@@ -66,7 +68,16 @@ class SearchEngineResultSite extends SiteBase
             $html .= implode('<hr>', array_keys($res[$i]));
         }
 
-        return $this->getHtml($html);
+        return $html;
+    }
+
+    /**
+     * @param array $links
+     * @return string
+     */
+    protected function getContentByAvarageLength(array $links): string
+    {
+        return '';
     }
 
     /**
