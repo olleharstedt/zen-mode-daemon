@@ -42,6 +42,15 @@ usort(
     }
 );
 
+$links = array_values(
+    array_filter(
+        $links,
+        function ($elem) {
+            return strlen($elem->text()) > 0;
+        }
+    )
+);
+
 $sum = 0;
 foreach ($links as $i => $link) {
     //echo $link->text() . PHP_EOL;
@@ -52,8 +61,18 @@ foreach ($links as $i => $link) {
         countAllChildren($link)
     ];
 }
+$avg = $sum / count($links);
+$mean = strlen($links[round(count($links) / 2)]->text());
 //echo 'Sum: ' . $sum . PHP_EOL;
-//echo 'Avg: ' . $sum / count($links) . PHP_EOL;
+//echo 'Avg: ' . $avg . PHP_EOL;
+//echo 'Mean: ' . $mean . PHP_EOL;
+
+foreach ($links as $link) {
+    if (strlen($link->text()) > $avg) {
+        //echo $link->text() . PHP_EOL;
+    }
+}
+//return 0;
 
 $plot = new \PHPlot(1024, 800);
 $plot->SetImageBorderType('plain');
