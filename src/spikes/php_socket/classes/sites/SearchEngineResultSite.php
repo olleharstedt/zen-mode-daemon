@@ -5,6 +5,7 @@ namespace zenmodedaemon\classes\sites;
 use PHPHtmlParser\Dom;
 use PHPHtmlParser\Dom\AbstractNode;
 use PHPHtmlParser\Dom\TextNode;
+use PHPHtmlParser\Exceptions\EmptyCollectionException;
 use Phpml\Classification\KNearestNeighbors;
 use Phpml\Clustering\KMeans;
 use Phpml\Clustering\DBSCAN;
@@ -22,16 +23,17 @@ class SearchEngineResultSite extends SiteBase
 
         $dom = new Dom();
         $dom->loadFromUrl($url);
-        $links = $dom->find('a');
+        $links = [];
+        array_push($links, ...$dom->find('a'));
 
-        return $this->getHtml($this->getContentByDBSCAN($links));
+        return $this->getHtml($this->getContentByAvarageLength($links));
     }
 
     /**
-     * @param $links
+     * @param array $links
      * @return string
      */
-    protected function getContentByDBSCAN($links): string
+    protected function getContentByDBSCAN(array $links): string
     {
         $content = '';
         $lens = [];
@@ -77,7 +79,69 @@ class SearchEngineResultSite extends SiteBase
      */
     protected function getContentByAvarageLength(array $links): string
     {
-        return '';
+        //$links = $this->removeEmptyLinks($links);
+        //$avg   = $this->getAvarageLinkLength($links);
+        //$links = $this->removeBelowAvarage($links, $avg);
+
+
+        // Bake HTML.
+        $html = array_reduce(
+            $links,
+            function ($html, $link) {
+                $h3 = $link->find('h3 div');
+                try {
+                    return $html . $h3->text() . '<br/>';
+                } catch (EmptyCollectionException $ex) {
+                    return $html . '';
+                }
+            },
+            ''
+        );
+        return $html;
+    }
+
+    /**
+     * @param array $links
+     * @param float $avg
+     * @return array
+     */
+    protected function removeBelowAvarage(array $links, float $avg): array
+    {
+        return array_filter(
+            $links,
+            function ($link) use ($avg) {
+                return strlen($link->text()) > $avg;
+            }
+        );
+    }
+
+    /**
+     * @param array $links
+     * @return float
+     */
+    protected function getAvarageLinkLength(array $links): float
+    {
+        $sum = 0;
+        foreach ($links as $i => $link) {
+            $sum += strlen($link->text());
+        }
+        return $sum / count($links);
+    }
+
+    /**
+     * @param array $links
+     * @return array
+     */
+    protected function removeEmptyLinks(array $links): array
+    {
+        return array_values(
+            array_filter(
+                $links,
+                function ($elem) {
+                    return strlen($elem->text()) > 0;
+                }
+            )
+        );
     }
 
     /**
